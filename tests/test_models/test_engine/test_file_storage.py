@@ -114,28 +114,36 @@ class TestFileStorage(unittest.TestCase):
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
 
+
+class TestGetAndCountFunctionFileStorage(unittest.TestCase):
+    """Test the get function in FileStorage"""
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_get(self):
-        """ Tests method for obtaining an instance file storage"""
+        """Test that gets object from file.json by id"""
         storage = FileStorage()
-        dic = {"name": "Vecindad"}
-        instance = State(**dic)
-        storage.new(instance)
+        userDict = {
+            "email": "testmail@gmail.com",
+            "password": "testpassword",
+            "first_name": "test_first_name",
+            "last_name": "test_last_name"
+        }
+        userInst = User(**userDict)
+        storage.new(userInst)
         storage.save()
         storage = FileStorage()
-        get_instance = storage.get(State, instance.id)
-        self.assertEqual(get_instance, instance)
+        getInst = storage.get(User, userInst.id)
+        self.assertEqual(getInst, userInst)
 
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_count(self):
-        """ Tests count method file storage """
+        """Test that counts object from file.json by classname"""
         storage = FileStorage()
-        dic = {"name": "Vecindad"}
-        state = State(**dic)
-        storage.new(state)
-        dic = {"name": "Mexico"}
-        city = City(**dic)
-        storage.new(city)
+        stateDict = {"name": "Lagos"}
+        stateInst = State(**stateDict)
+        storage.new(stateInst)
         storage.save()
-        c = storage.count()
-        self.assertEqual(len(storage.all()), c)
+        storage = FileStorage()
+        countAll = storage.count()
+        countStates = storage.count('State')
+        self.assertEqual(len(storage.all()), countAll)
+        self.assertEqual(len(storage.all('State')), countStates)
